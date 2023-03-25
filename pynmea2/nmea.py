@@ -66,7 +66,7 @@ class NMEASentence(NMEASentenceBase):
 
         )
         # checksum: *HH
-        (?:[*](?P<checksum>[A-F0-9]{2}))?
+        (?:[*](?P<checksum>[A-F0-9]{2})?)?
 
         # optional trailing whitespace
         \s*[\r\n]*$
