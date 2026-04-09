@@ -43,6 +43,19 @@ class ALM(TalkerSentence):
     )
 
 
+class ALR(TalkerSentence):
+    """ Set alarm state
+        $--ALR,hhmmss.ss,xxx,A,A,c--c*hh<CR><LF>
+    """
+    fields = (
+        ('Time of alarm condition change, UTC', 'timestamp', timestamp),
+        ('Unique alarm number (identifier) at alarm source', 'alarm_num'),
+        ('Alarm condition (A=threshold exceeded, V=not exceeded)', 'alarm_con'),
+        ('Alarm\'s acknowledge state (A=acknowledged, V=unacknowledged)', 'alarm_state'),
+        ('Alarm\'s description text', 'description'),
+    )
+
+
 class APA(TalkerSentence):
     """ Autopilot Sentence "A"
     """
@@ -281,6 +294,21 @@ class GSV(TalkerSentence):
         ('Azimuth, deg from true north 4', 'azimuth_4'), # 000 to 159
         ('SNR 4', 'snr_4'),
     )  # 00-99 dB
+
+
+class HBT(TalkerSentence):
+    """ Heartbeat supervision sentence
+        Format: $--HBT,<1>,<2>,<3>*hh<CR><LF>
+        e.g. $AIHBT,30,A,5*0D
+    <1> Configured repeat interval
+    <2> Equipment status
+    <3> Sequential sentence identifier
+    """
+    fields = (
+        ("Configured repeat interval", "interval", float),
+        ("Equipment status", "eq_status"),
+        ("Sequential sentence identifier", "seq_sent_iden", int),
+    )
 
 
 class HDG(TalkerSentence):
@@ -531,6 +559,13 @@ class ZDA(TalkerSentence, DatetimeFix):
         return d.astimezone(self.tzinfo)
 
 
+class MTA(TalkerSentence):
+    """ Air Temperature (to be phased out)
+    """
+    fields = (
+        ("Air temperature", "temperature", Decimal),
+        ("Units of measurement", "units"),
+    )
 
 
 # Implemented by Janez Stupar for Visionect
@@ -857,12 +892,6 @@ class TTM(TalkerSentence):
     #    fields = (
     # )
 
-#class MTA(TalkerSentence):
-#    """ Air Temperature (to be phased out)
-#    """
-    #    fields = (
-    # )
-
 #class OLN(TalkerSentence):
 #    """ Omega Lane Numbers
 #    """
@@ -1037,4 +1066,68 @@ class ALK(TalkerSentence,SeaTalk):
         ("Data Byte 7", "data_byte7"),
         ("Data Byte 8", "data_byte8"),
         ("Data Byte 9", "data_byte9")
+    )
+
+# Implemented by Davis Chappins for FLARM traffic
+#PFLAU: Operating status and priority intruder and obstacle data 
+class LAU(TalkerSentence):
+    fields = (
+        ("RX","RX"),
+        ("TX","TX"),  
+        ("GPS","GPS"),
+        ("Power","Power"),
+        ("AlarmLevel","AlarmLevel"),
+        ("RelativeBearing","RelativeBearing"),
+        ("AlarmType","AlarmType"),
+        ("RelativeVertial","RelativeVertical"),
+        ("RelativeDistance","RelativeDistance"),
+        
+    )
+
+#PFLAA: Data on other moving objects around 
+class LAA(TalkerSentence):
+    fields = (
+        ("AlarmLevel","AlarmLevel"),
+        ("RelativeNorth","RelativeNorth"),
+        ("RelativeEast","RelativeEast"),
+        ("RelativeVertical","RelativeVertical"),
+        ("ID-Type","ID-Type"),
+        ("ID","ID"),
+        ("Track","Track"),
+        ("TurnRate","TurnRate"),
+        ("GroundSpeed","GroundSpeed"),
+        ("ClimbRate","ClimbRate"),
+        ("Type","Type"),
+    )
+
+# Implemented by Joep de Jong
+# GPHEV: Heave
+class HEV(TalkerSentence):
+    """
+    Heave
+    """
+    fields = (("Heave", "heave", float),)
+
+# Used by AIRMAR and some other sonar/depth instruments.
+# The talker ID is IN (Integrated Navigation — often used by Airmar)
+# and the sentence type THS stands for Transducer Heading and Status.
+# Example: '$INTHS,304.5,A*25'
+class THS(TalkerSentence):
+    """ Transducer Heading and Status
+    """
+    fields = (
+        ("Heading", "heading", Decimal),
+        ("Status", "status"),
+    )
+
+# Example: '$--MMB,x.x,I,1004.6,B*03'
+class MMB(TalkerSentence):
+    """
+    Barometer
+    """
+    fields = (
+      ("PressureINHG", "pressure_ingh", float),
+      ("UnitINHG", "unit_ingh"),
+      ("PressureBars", "pressure_bars", float),
+      ("UnitBars", "unit_bars")
     )

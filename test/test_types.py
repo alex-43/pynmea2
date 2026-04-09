@@ -306,3 +306,66 @@ def test_GRS():
     assert msg.sv_res_05 == -0.1
     assert msg.sv_res_06 == 0.5
     assert msg.sv_res_07 == None
+
+
+def test_HBT():
+    data = "$AIHBT,30,A,1*09"
+    msg = pynmea2.parse(data)
+    assert msg.render() == data
+    assert isinstance(msg, pynmea2.HBT)
+    assert msg.talker == 'AI'
+    assert msg.sentence_type == 'HBT'
+    assert msg.interval == 30
+    assert msg.eq_status == 'A'
+    assert msg.seq_sent_iden == 1
+
+
+def test_ALR():
+    data = "$AIALR,,006,V,V,AIS:general failure*1A"
+    msg = pynmea2.parse(data)
+    assert msg.render() == data
+    assert isinstance(msg, pynmea2.ALR)
+    assert msg.talker == 'AI'
+    assert msg.sentence_type == 'ALR'
+    assert msg.alarm_num == '006'
+    assert msg.alarm_con == 'V'
+    assert msg.alarm_state == 'V'
+    assert msg.description == 'AIS:general failure'
+
+
+def test_HEV():
+    data = "$GPHEV,-0.01*52"
+    msg = pynmea2.parse(data)
+    assert msg.render() == data
+    assert isinstance(msg, pynmea2.HEV)
+    assert msg.talker == "GP"
+    assert msg.sentence_type == "HEV"
+    assert msg.heave == -0.01
+
+
+def test_MTA():
+    data = "$WIMTA,010.0,C*2A"
+    msg = pynmea2.parse(data)
+    assert msg.render() == data
+    assert msg.talker == 'WI'
+    assert msg.sentence_type == 'MTA'
+    assert msg.temperature == 10.0
+    assert msg.units == 'C'
+
+def test_THS():
+    data = "$INTHS,304.5,A*25"
+    msg = pynmea2.parse(data)
+    assert msg.render() == data
+    assert msg.talker == 'IN'
+    assert msg.sentence_type == 'THS'
+    assert msg.heading == 304.5
+    assert msg.status == 'A'
+
+def test_MMB():
+    data = "$WIMMB,,,1004.6,B*03"
+    msg = pynmea2.parse(data)
+    assert msg.render() == data
+    assert msg.talker == 'WI'
+    assert msg.sentence_type == 'MMB'
+    assert msg.pressure_bars == 1004.6
+    assert msg.unit_bars == "B"
